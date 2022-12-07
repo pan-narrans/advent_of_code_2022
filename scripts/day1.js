@@ -9,9 +9,9 @@ function sortElvesByCalories(elves) {
 }
 
 function sumTopElves(elves, num) {
-  return sortElvesByCalories(elves)
-    .filter((x, index) => index < num)
-    .reduce((x, y) => x + y)
+  return sortElvesByCalories(elves)       // Sort elves
+    .filter((x, index) => index < num)    // Get the top n elves
+    .reduce((x, y) => x + y)              // Sum the calories carried by the top n elves.
 }
 
 //#region INPUT
