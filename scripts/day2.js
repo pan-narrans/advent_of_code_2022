@@ -1,29 +1,56 @@
 
-function calcScore(guide) {
-  // A / X -> Rock      -> 1pts
-  // B / Y -> Paper     -> 2pts
-  // C / Z -> Scissors  -> 3pts
-
-  // Loss               -> 0pts
-  // Tie                -> 3pts
-  // Win                -> 6pts
-
-  // A / X -> 3 + 1     -> 4pts
-  // A / Y -> 0 + 2     -> 2pts
-  // A / Z -> 6 + 3     -> 9pts
-
-  // B / X -> 6 + 1     -> 7pts
-  // B / Y -> 3 + 2     -> 5pts
-  // B / Z -> 0 + 3     -> 3pts
+function calcScoreV1(guide) {
+  const shapeSelected = { 'X': 1, 'Y': 2, 'Z': 3 };
+  const roundOutcome = {
+    'A': { 'X': 3, 'Y': 6, 'Z': 0 },
+    'B': { 'X': 0, 'Y': 3, 'Z': 6 },
+    'C': { 'X': 6, 'Y': 0, 'Z': 3 },
+  };
 
   return guide
-    .split(/\n/)
-    .map(x => x.split(' '))
-    .map(x => x.map(x => ({ 'X': 1, 'Y': 2, 'Z': 3 })[x] || x))
+    .trim()                               // Remove trailing spaces in input.
+    .split(/\n/)                          // One array entry per input.
+    .map(x => x.split(' '))               // Split each of the players hands.
+    .map(x => [                           // Map hand to points:
+      roundOutcome[x[0]][x[1]],             // Points won in the outcome.
+      shapeSelected[x[1]]                   // Points won because of the shape selected.
+    ])
+    .map(x => x.reduce((x, y) => x + y))  // Add up round points.
+    .reduce((x, y) => x + y)              // Add up game points.
+}
+
+function calcScoreV2(guide) {
+  const shapeSelected = { 'X': 1, 'Y': 2, 'Z': 3 };
+  const mapHand = {
+    'X': { 'A': 'Z', 'B': 'X', 'C': 'Y' },  // Lose
+    'Y': { 'A': 'X', 'B': 'Y', 'C': 'Z' },  // Tie
+    'Z': { 'A': 'Y', 'B': 'Z', 'C': 'X' },  // Win
+  };
+  const roundOutcome = {
+    'A': { 'X': 3, 'Y': 6, 'Z': 0 },
+    'B': { 'X': 0, 'Y': 3, 'Z': 6 },
+    'C': { 'X': 6, 'Y': 0, 'Z': 3 },
+  };
+
+  return guide
+    .trim()                               // Remove trailing spaces in input.
+    .split(/\n/)                          // One array entry per input.
+    .map(round => round.split(' '))       // Split each of the players hands.
+    .map(hand => [                        // Map the desired outcome to the hand.
+      hand[0],                              // Other elf's hand.
+      mapHand[hand[1]][hand[0]],            // Our hand.
+    ])
+    .map(x => [                           // Map hand to points:
+      roundOutcome[x[0]][x[1]],             // Points won in the outcome.
+      shapeSelected[x[1]],                  // Points won because of the shape selected.
+    ])
+    .map(x => x.reduce((x, y) => x + y))  // Add up round points.
+    .reduce((x, y) => x + y)              // Add up game points.
 }
 
 //#region INPUT
-const strategyGuide = `A Z
+const strategyGuide = `
+A Z
 C X
 A Z
 A Z
